@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can Search Visibility Signals Help Prioritize Content Review?</title>
+
+<style>
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #18202a;
+  --muted: #5d6875;
+  --line: #dfe4ea;
+  --accent: #315efb;
+  --accent-soft: #eef2ff;
+  --success: #18794e;
+  --warning: #9a6700;
+  --danger: #b42318;
+  --shadow: 0 8px 30px rgba(20, 30, 45, 0.07);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: min(1120px, calc(100% - 40px));
+  margin: auto;
+}
+
+header {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(49,94,251,.15), transparent 30%),
+    linear-gradient(135deg, #111827, #1f2937);
+  color: white;
+  padding: 80px 0 70px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #c7d2fe;
+  margin-bottom: 18px;
+}
+
+h1 {
+  font-size: clamp(2.3rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  max-width: 950px;
+  margin: 0 0 25px;
+}
+
+.subtitle {
+  max-width: 820px;
+  font-size: 1.18rem;
+  color: #d1d5db;
+  margin: 0;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.badge {
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.07);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: .85rem;
+  color: #e5e7eb;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-inner {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 12px 0;
+}
+
+.nav-inner a {
+  white-space: nowrap;
+  font-size: .86rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+main {
+  padding: 55px 0 90px;
+}
+
+section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 42px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+h2 {
+  font-size: 1.8rem;
+  line-height: 1.2;
+  margin: 0 0 22px;
+  letter-spacing: -.025em;
+}
+
+h3 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 1.15rem;
+}
+
+p {
+  margin: 0 0 17px;
+}
+
+.lead {
+  font-size: 1.08rem;
+  color: #344050;
+}
+
+.abstract {
+  border-left: 4px solid var(--accent);
+  padding-left: 22px;
+}
+
+.question-box {
+  background: var(--accent-soft);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.question-box strong {
+  display: block;
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent);
+  margin-bottom: 7px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 28px 0;
+}
+
+.metric {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  background: #fbfcfe;
+}
+
+.metric .value {
+  display: block;
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -.03em;
+}
+
+.metric .label {
+  display: block;
+  color: var(--muted);
+  font-size: .83rem;
+  margin-top: 4px;
+}
+
+.callout {
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin: 24px 0;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+}
+
+.callout.warning {
+  background: #fff8e6;
+  border-color: #ead8a1;
+}
+
+.callout.success {
+  background: #edf9f2;
+  border-color: #b8e0c7;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 22px 0;
+  font-size: .94rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  background: #f7f8fa;
+  font-weight: 700;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.chart {
+  margin: 28px 0;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  overflow-x: auto;
+}
+
+.chart-title {
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.caption {
+  color: var(--muted);
+  font-size: .88rem;
+  margin-top: 10px;
+}
+
+.chart-takeaway {
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.recommendation {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 23px;
+  margin: 16px 0;
+}
+
+.rank {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 7px;
+}
+
+.recommendation h3 {
+  margin-top: 0;
+}
+
+.limit-list li,
+.method-list li {
+  margin-bottom: 10px;
+}
+
+code {
+  background: #f1f3f5;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: .9em;
+}
+
+footer {
+  background: #111827;
+  color: #d1d5db;
+  padding: 50px 0;
+}
+
+footer h2 {
+  color: white;
+}
+
+footer p {
+  max-width: 850px;
+}
+
+.small {
+  font-size: .86rem;
+  color: var(--muted);
+}
+
+footer .small {
+  color: #9ca3af;
+}
+
+@media (max-width: 800px) {
+  section {
+    padding: 28px 22px;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    padding: 60px 0 50px;
+  }
+}
+
+@media (max-width: 500px) {
+  .container {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 2.3rem;
+  }
+
+  section {
+    border-radius: 13px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <span class="eyebrow">FlyRank ML Internship · Search Intelligence Research</span>
+
+    <h1>Can February Search Visibility and Engagement Signals Help Prioritize Content for Human Review?</h1>
+
+    <p class="subtitle">
+      A client-grouped evaluation of February search and engagement signals for
+      directional March activity decision-support.
+    </p>
+
+    <div class="meta">
+      <span class="badge">321,546 content items</span>
+      <span class="badge">February → March 2026</span>
+      <span class="badge">Client-grouped 80/20 split</span>
+      <span class="badge">Logistic Regression vs baseline</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#abstract">Abstract</a>
+    <a href="#problem">Problem</a>
+    <a href="#data">Data</a>
+    <a href="#methodology">Methodology</a>
+    <a href="#results">Results</a>
+    <a href="#limitations">Limitations</a>
+    <a href="#recommendations">Recommendations</a>
+    <a href="#reproducibility">Reproducibility</a>
+    <a href="#acknowledgments">Data credit</a>
+  </div>
+</nav>
+
+<main>
+<div class="container">
+
+<!-- 1. TITLE + ABSTRACT -->
+
+<section id="abstract">
+  <h2>1. Abstract</h2>
+
+  <div class="abstract">
+    <p>
+      This study asks whether February search visibility and engagement signals
+      can help identify content items that warrant human review for future
+      activity and click-through opportunities.
+    </p>
+
+    <p>
+      The analysis uses 321,546 content items from the FlyRank internship
+      warehouse, with February 2026 signals used as features and March 2026
+      activity used as the outcome window.
+    </p>
+
+    <p>
+      A Logistic Regression model using five February search and engagement
+      features was evaluated against a Week-4 rule-based baseline on the same
+      client-grouped 80/20 test split.
+    </p>
+
+    <p>
+      The measured Logistic Regression results were lower overall than the
+      baseline on accuracy, recall, and F1, although the model produced higher
+      precision on the client-grouped test set.
+    </p>
+
+    <p>
+      The resulting evidence is therefore intended as directional
+      decision-support for prioritizing human content review, not as a causal
+      explanation of future activity or an automatic editorial decision system.
+    </p>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <span class="value">321,546</span>
+      <span class="label">February content items</span>
+    </div>
+    <div class="metric">
+      <span class="value">0</span>
+      <span class="label">Client overlap in grouped split</span>
+    </div>
+    <div class="metric">
+      <span class="value">0.7008</span>
+      <span class="label">Baseline F1</span>
+    </div>
+    <div class="metric">
+      <span class="value">0.6200</span>
+      <span class="label">Logistic Regression F1</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- 2. INTRODUCTION / PROBLEM -->
+
+<section id="problem">
+  <h2>2. Introduction / Problem</h2>
+
+  <p class="lead">
+    Content teams can have a large set of pages to review but limited human
+    attention. The practical question is therefore not simply whether a model
+    can classify content, but whether measured search and engagement signals
+    can help a reviewer decide what deserves attention first.
+  </p>
+
+  <div class="question-box">
+    <strong>Research question</strong>
+    Can February search visibility and engagement signals help identify content
+    items that warrant human review for future activity and click-through
+    opportunities?
+  </div>
+
+  <div class="question-box">
+    <strong>Decision supported</strong>
+    Which content items should a content analyst review first?
+  </div>
+
+  <p>
+    The project treats this as a content-review prioritization problem. The
+    intended output is a ranked set of review candidates with reason codes,
+    rather than an automatic system that edits, removes, redirects, or
+    republishes content.
+  </p>
+
+  <p>
+    This distinction matters because the Week-4 baseline provides a simple,
+    interpretable benchmark. A more complex learned model is useful only if
+    its measured performance and validation design provide evidence beyond
+    what the simpler rule already provides.
+  </p>
+</section>
+
+
+<!-- 3. DATA -->
+
+<section id="data">
+  <h2>3. Data</h2>
+
+  <p>
+    The study uses the FlyRank internship warehouse and the
+    <code>fact_content_daily_performance</code> source table. The analysis
+    operates at the content-item-within-client level after aggregating the
+    daily source data into the feature and outcome windows.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Element</th>
+        <th>Study definition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Dataset</td>
+        <td>FlyRank internship warehouse</td>
+      </tr>
+      <tr>
+        <td>Source table</td>
+        <td><code>fact_content_daily_performance</code></td>
+      </tr>
+      <tr>
+        <td>Feature window</td>
+        <td>February 2026</td>
+      </tr>
+      <tr>
+        <td>Outcome window</td>
+        <td>March 2026</td>
+      </tr>
+      <tr>
+        <td>Unit of analysis</td>
+        <td>One content item within a client</td>
+      </tr>
+      <tr>
+        <td>Validated feature rows</td>
+        <td>321,546</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Model features</h3>
+
+  <ul class="method-list">
+    <li>February Google Search Console impressions</li>
+    <li>February Google Search Console clicks</li>
+    <li>February Google Search Console average position</li>
+    <li>February GA4 sessions</li>
+    <li>February scroll events</li>
+  </ul>
+
+  <h3>Target</h3>
+
+  <p>
+    The target used by the capstone is <code>march_activity_label</code>, a
+    binary outcome representing whether the content item is associated with
+    March activity. The target is constructed from the March outcome window
+    and is not included among the February model features.
+  </p>
+
+  <h3>Public-safety exclusions</h3>
+
+  <p>
+    March outcome information, future-window information, label-derived inputs,
+    product or availability information, and client/content identifiers were
+    excluded from the model feature set. The paper reports only aggregate
+    information and does not reproduce private client names, URLs, queries,
+    credentials, or raw exports.
+  </p>
+
+  <div class="callout warning">
+    <strong>Interpretation boundary:</strong>
+    The data supports an observed study of the supplied warehouse and its
+    February-to-March evaluation setup. It does not establish how Google's
+    ranking system works or provide evidence of a causal refresh effect.
+  </div>
+</section>
+
+
+<!-- 4. METHODOLOGY -->
+
+<section id="methodology">
+  <h2>4. Methodology</h2>
+
+  <p>
+    The analysis is designed as a supervised binary-classification study with
+    a practical review decision as the downstream use case.
+  </p>
+
+  <h3>Feature and outcome separation</h3>
+
+  <p>
+    The model uses only information available during February. The March
+    window is reserved for the outcome. This preserves the temporal prediction
+    setup and prevents future outcome information from entering the feature
+    vector.
+  </p>
+
+  <h3>Model</h3>
+
+  <p>
+    Logistic Regression was selected because the target is binary and the
+    method provides an interpretable, relatively simple learned model. The
+    objective was not to maximize model complexity, but to test whether the
+    February signals provide useful directional information for prioritizing
+    review.
+  </p>
+
+  <h3>Validation design</h3>
+
+  <p>
+    The final evaluation uses a client-grouped 80/20 train-test split. Content
+    belonging to a client is kept within one partition, so the same client's
+    pages do not appear in both training and testing.
+  </p>
+
+  <div class="metrics">
+    <div class="metric">
+      <span class="value">43</span>
+      <span class="label">Training clients</span>
+    </div>
+    <div class="metric">
+      <span class="value">11</span>
+      <span class="label">Test clients</span>
+    </div>
+    <div class="metric">
+      <span class="value">0</span>
+      <span class="label">Client overlap</span>
+    </div>
+    <div class="metric">
+      <span class="value">5</span>
+      <span class="label">Model features</span>
+    </div>
+  </div>
+
+  <p>
+    This is the honest comparison used throughout the final paper: both the
+    learned model and the Week-4 baseline are evaluated on the same
+    client-grouped test set.
+  </p>
+
+  <h3>Baseline</h3>
+
+  <p>
+    The Week-4 baseline is a transparent rule-based approach that prioritizes
+    content with meaningful search visibility, average position in the top 20,
+    and CTR below 3%.
+  </p>
+
+  <h3>Leakage checks</h3>
+
+  <p>
+    The final feature audit found no forbidden future/outcome, label-derived,
+    or product/availability feature matches. The target was not present in the
+    model feature set, and the final leakage audit passed.
+  </p>
+
+  <div class="callout success">
+    <strong>Validation conclusion:</strong>
+    The client-grouped evaluation removes the client overlap present in the
+    earlier random row-level split and therefore provides a more conservative
+    estimate of cross-client performance.
+  </div>
+</section>
+
+
+<!-- 5. RESULTS -->
+
+<section id="results">
+  <h2>5. Results</h2>
+
+  <p class="lead">
+    The learned model did not outperform the simple baseline on the honest
+    client-grouped test split. Its main measured advantage was higher
+    precision, while the baseline retained stronger recall and F1.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Approach</th>
+        <th>Accuracy</th>
+        <th>Precision</th>
+        <th>Recall</th>
+        <th>F1</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Week-4 baseline</td>
+        <td>0.8044</td>
+        <td>0.8098</td>
+        <td>0.6176</td>
+        <td><strong>0.7008</strong></td>
+      </tr>
+      <tr>
+        <td>Logistic Regression</td>
+        <td>0.7837</td>
+        <td><strong>0.8896</strong></td>
+        <td>0.4758</td>
+        <td>0.6200</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="chart">
+    <div class="chart-title">F1 score on the same client-grouped test split</div>
+
+    <svg viewBox="0 0 760 390" width="100%" role="img"
+         aria-label="Bar chart comparing F1 scores of 0.7008 for the Week-4 baseline and 0.6200 for Logistic Regression">
+      <line x1="90" y1="320" x2="720" y2="320" stroke="#cfd5dc"/>
+      <line x1="90" y1="50" x2="90" y2="320" stroke="#cfd5dc"/>
+
+      <text x="78" y="325" text-anchor="end" font-size="14">0.0</text>
+      <text x="78" y="258" text-anchor="end" font-size="14">0.2</text>
+      <text x="78" y="190" text-anchor="end" font-size="14">0.4</text>
+      <text x="78" y="123" text-anchor="end" font-size="14">0.6</text>
+      <text x="78" y="55" text-anchor="end" font-size="14">0.8</text>
+
+      <rect x="175" y="84" width="170" height="236" rx="8" fill="#315efb"/>
+      <rect x="465" y="111" width="170" height="209" rx="8" fill="#64748b"/>
+
+      <text x="260" y="70" text-anchor="middle" font-size="18" font-weight="700">0.7008</text>
+      <text x="550" y="97" text-anchor="middle" font-size="18" font-weight="700">0.6200</text>
+
+      <text x="260" y="350" text-anchor="middle" font-size="14">Week-4 baseline</text>
+      <text x="550" y="350" text-anchor="middle" font-size="14">Logistic Regression</text>
+    </svg>
+
+    <p class="caption">
+      Figure 1. Both approaches were evaluated on the same client-grouped
+      80/20 test split.
+    </p>
+
+    <p class="chart-takeaway">
+      Takeaway: the baseline's measured F1 was 0.7008 versus 0.6200 for
+      Logistic Regression.
+    </p>
+  </div>
+
+  <h3>What changed after honest validation?</h3>
+
+  <p>
+    Under the earlier random row-level split, the model achieved accuracy
+    0.8179, precision 0.8944, recall 0.4838, and F1 0.6280. That split had
+    53 clients overlapping between training and testing.
+  </p>
+
+  <p>
+    Under the client-grouped split, accuracy was 0.7837, precision 0.8896,
+    recall 0.4758, and F1 0.6200, with zero client overlap. The small change in
+    F1 is less important than the methodological improvement: the final
+    evaluation better tests whether the approach transfers across unseen
+    clients.
+  </p>
+
+  <h3>Review queue</h3>
+
+  <p>
+    The W07 action playbook identified 68,696 review candidates from 321,546
+    February content items, a review-candidate rate of approximately 21.36%.
+  </p>
+
+  <div class="chart">
+    <div class="chart-title">February content items and review candidates</div>
+
+    <svg viewBox="0 0 760 390" width="100%" role="img"
+         aria-label="Bar chart comparing 321546 February content items with 68696 review candidates">
+      <line x1="90" y1="320" x2="720" y2="320" stroke="#cfd5dc"/>
+      <line x1="90" y1="50" x2="90" y2="320" stroke="#cfd5dc"/>
+
+      <rect x="165" y="62" width="190" height="258" rx="8" fill="#315efb"/>
+      <rect x="475" y="265" width="190" height="55" rx="8" fill="#64748b"/>
+
+      <text x="260" y="48" text-anchor="middle" font-size="18" font-weight="700">321,546</text>
+      <text x="570" y="250" text-anchor="middle" font-size="18" font-weight="700">68,696</text>
+
+      <text x="260" y="350" text-anchor="middle" font-size="14">All February content</text>
+      <text x="570" y="350" text-anchor="middle" font-size="14">Review queue</text>
+    </svg>
+
+    <p class="caption">
+      Figure 2. The action playbook narrows the full February population to a
+      human-review queue.
+    </p>
+
+    <p class="chart-takeaway">
+      Takeaway: approximately one in five February items entered the review
+      candidate queue; the queue is a prioritization device, not an automatic
+      action list.
+    </p>
+  </div>
+</section>
+
+
+<!-- 6. LIMITATIONS -->
+
+<section id="limitations">
+  <h2>6. Limitations &amp; Honest Framing</h2>
+
+  <p>
+    The results are useful only within the evidence and validation design of
+    this study. Several boundaries are important.
+  </p>
+
+  <ul class="limit-list">
+    <li>
+      The Logistic Regression model did not outperform the Week-4 baseline on
+      the client-grouped test split.
+    </li>
+    <li>
+      The model's higher precision came with lower recall, so it does not
+      identify every March-active item.
+    </li>
+    <li>
+      The study measures associations and predictive performance within the
+      supplied dataset; it does not establish causal effects.
+    </li>
+    <li>
+      The analysis does not explain Google's ranking algorithm or prove that
+      changing any content signal will improve search performance.
+    </li>
+    <li>
+      The review queue is decision-support. It should not automatically edit,
+      publish, delete, redirect, deindex, or refresh content.
+    </li>
+    <li>
+      The evidence comes from the specified February-to-March study window and
+      should not automatically be generalized to other periods or populations.
+    </li>
+    <li>
+      A content item being prioritized for review does not mean that its
+      content is incorrect, poor quality, or guaranteed to benefit from a
+      particular editorial change.
+    </li>
+  </ul>
+
+  <div class="callout warning">
+    <strong>Safe claim:</strong>
+    The results are observed, measured, directional, and intended for
+    decision-support. They are not a causal model, an explanation of Google's
+    ranking system, or a guarantee of performance improvement.
+  </div>
+</section>
+
+
+<!-- 7. RECOMMENDATIONS -->
+
+<section id="recommendations">
+  <h2>7. Ranked Recommendations</h2>
+
+  <p>
+    The action playbook converts the validated evidence into a practical
+    human-review workflow. The ranking is intended to answer one question:
+    <strong>what should a content analyst look at first?</strong>
+  </p>
+
+  <div class="recommendation">
+    <span class="rank">Rank 1 · High priority</span>
+    <h3>Review visible low-CTR content</h3>
+    <p>
+      <strong>Reason code:</strong> <code>visible_low_ctr</code>
+    </p>
+    <p>
+      Prioritize content that has meaningful search visibility but comparatively
+      low click-through behavior. Review the search context, query intent,
+      title, snippet, page relevance, and measurement quality before deciding
+      whether an editorial action is appropriate.
+    </p>
+    <p>
+      <strong>Action:</strong> <code>REVIEW_CTR</code>
+    </p>
+  </div>
+
+  <div class="recommendation">
+    <span class="rank">Rank 2 · High priority</span>
+    <h3>Diagnose low-CTR context</h3>
+    <p>
+      <strong>Reason code:</strong> <code>low_ctr_context_check</code>
+    </p>
+    <p>
+      A low observed CTR is a reason for investigation, not automatically a
+      reason to rewrite content. Human review should establish whether the
+      apparent opportunity is consistent with search intent, SERP context,
+      brand effects, measurement quality, and the page's actual purpose.
+    </p>
+    <p>
+      <strong>Action:</strong> <code>DIAGNOSE_CTR_CONTEXT</code>
+    </p>
+  </div>
+
+  <div class="recommendation">
+    <span class="rank">Rank 3 · Medium priority</span>
+    <h3>Review freshness signals</h3>
+    <p>
+      <strong>Reason code:</strong> <code>age_directional_signal</code>
+    </p>
+    <p>
+      Content age can provide a directional signal for review, but age alone
+      should not trigger an automatic refresh. Reviewers should consider
+      factual freshness, topic changes, search intent, existing performance,
+      and the actual usefulness of the page before recommending an update.
+    </p>
+    <p>
+      <strong>Action:</strong> <code>REVIEW_FRESHNESS</code>
+    </p>
+  </div>
+
+  <h3>Human-review operating rule</h3>
+
+  <div class="callout success">
+    Rank candidates → review context → diagnose the likely issue → decide on
+    an action. The queue does not automatically make editorial changes.
+  </div>
+
+  <h3>What should not be automated</h3>
+
+  <ul class="limit-list">
+    <li>Automatic content rewriting or publishing.</li>
+    <li>Automatic deletion, redirect, or deindex decisions.</li>
+    <li>Automatic high-consequence factual changes.</li>
+    <li>Automatic edits based only on low CTR.</li>
+    <li>Automatic refresh based only on content age.</li>
+    <li>Claims of guaranteed performance improvement.</li>
+    <li>Automatic actions when measurement or indexing quality is uncertain.</li>
+    <li>Automatic application of one recommendation to an entire content population.</li>
+  </ul>
+</section>
+
+
+<!-- 8. REPRODUCIBILITY -->
+
+<section id="reproducibility">
+  <h2>8. Reproducibility</h2>
+
+  <p>
+    The analysis is backed by the notebooks committed to the project
+    repository. The notebooks record the feature construction, baseline,
+    model evaluation, validation audit, action playbook, and capstone
+    synthesis.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Artifact</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="../work/notebooks/w05_model.ipynb">
+            W05 model notebook
+          </a>
+        </td>
+        <td>Model construction and evaluation</td>
+      </tr>
+      <tr>
+        <td>
+          <a href="../work/notebooks/w06_validation_audit.ipynb">
+            W06 validation audit
+          </a>
+        </td>
+        <td>Grouped validation, leakage audit, and claim rewrite</td>
+      </tr>
+      <tr>
+        <td>
+          <a href="../work/notebooks/w07_action_playbook.ipynb">
+            W07 action playbook
+          </a>
+        </td>
+        <td>Ranked review queue and action recommendations</td>
+      </tr>
+      <tr>
+        <td>
+          <a href="../work/notebooks/capstone.ipynb">
+            Capstone notebook
+          </a>
+        </td>
+        <td>Paper-ready synthesis of question, data, methodology, results, and recommendations</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <a href="https://github.com/Shakir-j/flyrank-internship-ml" target="_blank" rel="noopener">
+      View the complete GitHub repository
+    </a>
+  </p>
+
+  <h3>Re-run principle</h3>
+
+  <p>
+    The reported results should be traced to the executed notebooks and their
+    recorded outputs rather than copied into an independent analysis. The
+    final validation design is the client-grouped split described above.
+  </p>
+
+  <p class="small">
+    The page reports aggregate, public-safe results only. Raw warehouse data,
+    private queries, client identifiers, credentials, and private exports are
+    not part of the paper.
+  </p>
+</section>
+
+
+<!-- 9. ACKNOWLEDGMENTS -->
+
+<section id="acknowledgments">
+  <h2>9. Acknowledgments &amp; Data Credit</h2>
+
+  <p>
+    This research artifact was built as part of the FlyRank ML Internship and
+    uses the internship's provided search and content-performance dataset.
+  </p>
+
+  <p>
+    <strong>Built on the FlyRank ML Internship dataset.</strong>
+  </p>
+
+  <p>
+    Data source:
+    <a href="https://flyrank.ai" target="_blank" rel="noopener">
+      FlyRank
+    </a>
+  </p>
+
+  <p>
+    The analysis follows the project's public-safety requirements and presents
+    only aggregate findings suitable for a public research artifact.
+  </p>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="container">
+    <h2>Research takeaway</h2>
+
+    <p>
+      The strongest conclusion from this study is methodological as much as
+      predictive: honest client-grouped validation showed that the simple
+      baseline remained stronger on overall F1 than the learned Logistic
+      Regression model. The resulting workflow is therefore best used as
+      measured, directional decision-support for human content review rather
+      than as an automatic editorial system.
+    </p>
+
+    <p class="small">
+      FlyRank ML Internship · Search Intelligence Research · Public-safe
+      aggregate analysis
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
